@@ -72,7 +72,16 @@ def create_refined_agent():
 
     tools = [find_bad_calls_for_user]
 
-    # Expert System Prompt to guide the agent's analysis and output format
+    # CORRECTED: The system_message argument is removed from this function call.
+    agent_executor = create_react_agent(llm, tools)
+    return agent_executor
+
+
+# --- Main Execution Block ---
+if __name__ == "__main__":
+    agent = create_refined_agent()
+    
+    # The system prompt is now defined here before being passed to the agent.
     system_prompt = """
     You are an expert Call Quality Data (CQD) Analyst. Your primary function is to analyze call quality reports for users and provide precise, actionable insights. Do not be vague.
 
@@ -97,14 +106,6 @@ def create_refined_agent():
     **Actionable Recommendations:**
     - **For IT Support:** [Provide 1-3 specific, numbered recommendations. For example: "1. Investigate the user's home network for packet loss, as this was reported multiple times." or "2. Verify the user's client version on their Windows device, as high CPU usage can be linked to outdated software."].
     """
-
-    agent_executor = create_react_agent(llm, tools, system_message=system_prompt)
-    return agent_executor
-
-
-# --- Main Execution Block ---
-if __name__ == "__main__":
-    agent = create_refined_agent()
     
     # Example query with a slightly misspelled name
     user_query = "Please find all bad calls for 'Jaimie Tores' and give me actionable insights."
@@ -112,7 +113,13 @@ if __name__ == "__main__":
 
     print(f"Querying for: {user_query}\n")
     
-    response = agent.invoke({"messages": [("user", user_query)]})
+    # CORRECTED: The system_prompt is passed as the first message in the list.
+    response = agent.invoke({
+        "messages": [
+            ("system", system_prompt),
+            ("user", user_query)
+        ]
+    })
     
     print("\n--- CQD Expert Analysis ---")
     # The final, formatted answer is in the last message content
