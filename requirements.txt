@@ -3,3 +3,5 @@ langgraph
 langchain-openai
 python-dotenv
 pandas
+thefuzz
+python-Levenshtein
